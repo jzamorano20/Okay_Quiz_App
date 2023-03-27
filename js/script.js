@@ -1,5 +1,4 @@
-//selecting all required elements
-// found out about Arrow Function expressions and a
+
 var start_btn = document.querySelector(".start_btn button");
 var info_box = document.querySelector(".info_box");
 var exit_btn = info_box.querySelector(".buttons .quit");
@@ -24,10 +23,10 @@ continue_btn.onclick = ()=>{
     quiz_box.classList.add("activeQuiz"); //show quiz box
     showQuetions(0); //calling showQestions function
     queCounter(1); //passing 1 parameter to queCounter
-    startTimer(15); //calling startTimer function
+    startTimer(60); //calling startTimer function
     startTimerLine(0); //calling startTimerLine function
 }
-var timeValue =  50;
+var timeValue =  60;
 var que_count = 0;
 var que_numb = 1;
 var userScore = 0;
@@ -40,7 +39,7 @@ var quit_quiz = result_box.querySelector(".buttons .quit");
 restart_quiz.onclick = ()=>{
     quiz_box.classList.add("activeQuiz"); //show quiz box
     result_box.classList.remove("activeResult"); //hide result box
-    timeValue = 50; 
+    timeValue = 60; 
     que_count = 0;
     que_numb = 1;
     userScore = 0;
@@ -54,23 +53,23 @@ restart_quiz.onclick = ()=>{
     timeText.textContent = "Time Left"; //change the text of timeText to Time Left
     next_btn.classList.remove("show"); //hide the next button
 }
-// if quitQuiz button clicked replaced the .addEventList
+// if quitQuiz button clicked
 quit_quiz.onclick = ()=>{
     window.location.reload(); //reload the current window
 }
 var next_btn = document.querySelector("footer .next_btn");
 var bottom_ques_counter = document.querySelector("footer .total_que");
 // if Next Que button clicked
-//  when looking online found Arrow functions expressions on mdm web docs the same as using functions without having function in
 next_btn.onclick = ()=>{
-    if(que_count < questions.length - 1){ //if question count is less than total question length
-        que_count++; //increment the que_count value
-        que_numb++; //increment the que_numb value
-        showQuetions(que_count); //calling showQestions function
+    currentTimeValue = timeCount.textContent;
+    if(que_count < questions.length - 1){ //set to count up to 10 questions and will stop at my 10th question 
+        que_count++; //increasing the que_count value by 1
+        que_numb++; //increaing  the que_numb value by 1
+        showQuetions(que_count); //shows what the question number is 
         queCounter(que_numb); //passing que_numb value to queCounter
         clearInterval(counter); //clear counter
         clearInterval(counterLine); //clear counterLine
-        startTimer(timeValue); //calling startTimer function
+        startTimer(currentTimeValue); //calling startTimer function
         startTimerLine(widthValue); //calling startTimerLine function
         timeText.textContent = "Time Left"; //change the timeText to Time Left
         next_btn.classList.remove("show"); //hide the next button
@@ -112,18 +111,30 @@ function optionSelected(answer){
     if(userAns == correcAns){ //if user selected option is equal to array's correct answer
         userScore += 1; //upgrading score value with 1
         answer.classList.add("correct"); //adding green color to correct selected option
-        answer.insertAdjacentHTML("beforeend", tickIconTag); //adding tick icon to correct selected option missing link wont load 
+        answer.insertAdjacentHTML("beforeend", tickIconTag); //adding tick icon to correct selected option
         console.log("Correct Answer");
         console.log("Your correct answers = " + userScore);
     }else{
         answer.classList.add("incorrect"); //adding red color to correct selected option
-        answer.insertAdjacentHTML("beforeend", crossIconTag); //adding cross icon to correct selected option missing link wont load
+        answer.insertAdjacentHTML("beforeend", crossIconTag); //adding cross icon to correct selected option
         console.log("Wrong Answer");
         for(i=0; i < allOptions; i++){
             if(option_list.children[i].textContent == correcAns){ //if there is an option which is matched to an array answer 
                 option_list.children[i].setAttribute("class", "option correct"); //adding green color to matched option
                 option_list.children[i].insertAdjacentHTML("beforeend", tickIconTag); //adding tick icon to matched option
                 console.log("Auto selected correct answer.");
+            }
+        }
+        // subtract 6 seconds if question is wrong
+        currentTime = parseInt(timeCount.textContent);
+        if (currentTime){
+            currentTime -= 6;
+            if (currentTime < 0) {
+                timeCount.textContent = '00';
+            } else if (currentTime < 10) {
+                timeCount.textContent = '0' + currentTime;
+            } else {
+                timeCount.textContent = currentTime;
             }
         }
     }
@@ -139,37 +150,50 @@ function showResult(){
     var scoreText = result_box.querySelector(".score_text");
     if (userScore >=7){ // if user scored more than 3
         //creating a new span tag and passing the user score number and total question number
-        var scoreTag = '<span>and congrats! , You got <p>'+ userScore +'</p> out of <p>'+ questions.length +'</p></span>';
-        scoreText.innerHTML = scoreTag;  //adding new span tag inside score_Text
+        var scoreTag = '<span> congrats! , You got <p>'+ userScore +'</p> out of <p>'+ questions.length +'</p></span>';
+        // scoreText.innerHTML = scoreTag;  //adding new span tag inside score_Text
     }
     else if(userScore <= 5){ // if user scored more than 1
         var scoreTag = '<span>Keep trying , You got <p>'+ userScore +'</p> out of <p>'+ questions.length +'</p></span>';
-        scoreText.innerHTML = scoreTag;
+        // scoreText.innerHTML = scoreTag;
     }
     else{ // if user scored less than 1
         var scoreTag = '<span>You need to study more , You got only <p>'+ userScore +'</p> out of <p>'+ questions.length +'</p></span>';
-        scoreText.innerHTML = scoreTag;
+        // scoreText.innerHTML = scoreTag;
     }
+    scoreText.innerHTML = '<input type="text" id="initials" value="enter initials">' + 
+                        '<button class="saveScore">Save Score</button>' +  scoreTag;
+    var SaveScore = ('scoreText.innerHTML + scorceTag');
+    var SaveScore_serialized = JSON.stringify(SaveScore);
+    localStorage.setItem('SaveScore',SaveScore_serialized);
+    var SaveScore_deserialized =JSON.parse(localStorage.getitem('SaveScore'));
+     console.log(SaveScore_deserialized);
 }
 function startTimer(time){
+    var stopCount = 0;
     counter = setInterval(timer, 1000);
     function timer(){
-        timeCount.textContent = time; //changing the value of timeCount with time value
         time--; //decrement the time value
+        timeCount.textContent = time; //changing the value of timeCount with time value
+        stopCount++;
+        if (stopCount === 15 || !time){
+            clearInterval(counter); //clear counter after 15 seconds
+        }
+
         if(time < 9){ //if timer is less than 9
             var addZero = timeCount.textContent; 
             timeCount.textContent = "0" + addZero; //add a 0 before time value
         }
         if(time < 0){ //if timer is less than 0
             clearInterval(counter); //clear counter
-            timeText.textContent = "Time Off"; //change the time text to time off
+            timeText.textContent = "Time Over"; //change the time text to time off
             var allOptions = option_list.children.length; //getting all option items
             var correcAns = questions[que_count].answer; //getting correct answer from array
             for(i=0; i < allOptions; i++){
                 if(option_list.children[i].textContent == correcAns){ //if there is an option which is matched to an array answer
                     option_list.children[i].setAttribute("class", "option correct"); //adding green color to matched option
                     option_list.children[i].insertAdjacentHTML("beforeend", tickIconTag); //adding tick icon to matched option
-                    console.log("Time Off: Auto selected correct answer.");
+                    console.log("Time Over: Auto selected correct answer.");
                 }
             }
             for(i=0; i < allOptions; i++){
@@ -179,7 +203,6 @@ function startTimer(time){
         }
     }
 }
-// tutor did 
 function startTimerLine(time){
     counterLine = setInterval(timer, 29);
     function timer(){
