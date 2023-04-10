@@ -12,3 +12,12 @@ after which i created the code to add eventlisenters to the buttons to do things
 Added icons for the correct and incorrect answers having an issue because i cant find my API key anymore for font awesome.
 
 Then attached the questions into a string to be able to pull the correct answer 
+
+![this is a screenshot of the web page at the start](./assets/start_quiz.png)
+
+![this is after hitting start quiz](./assets/starting_quiz.png)
+
+![this is the acutal quiz running](./assets/running_quiz.png)
+
+Link to the deployed site
+https://jzamorano20.github.io/Okay_Quiz_App/
